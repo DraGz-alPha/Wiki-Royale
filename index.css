@@ -1,0 +1,11 @@
+.card {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    border: 1px black solid;
+    background-color: burlywood;
+}
+
+body {
+    text-align: center;
+    align-items: center;
+}

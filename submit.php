@@ -12,11 +12,6 @@
     $statement->bindValue(':password', $password);
     $statement->execute();
 
-    echo "$username";
-    echo "$email";
-    echo "$password";
-    echo "hello";
-
     $insert_id = $db->lastInsertId();
 
     header("Location: index.php");
