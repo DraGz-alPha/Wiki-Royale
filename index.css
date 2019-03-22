@@ -16,6 +16,30 @@
     background-image: url("img/backgrounds/card_background.png");
 }
 
+.card h4 {
+    font-size: 1.8em;
+    font-family: 'Germania One', cursive;
+    color: #E79A4A;
+    text-shadow: -1px -1px 0 #000, 2px -2px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.card-content {
+    background-color: #676661;
+    border: 2px inset;
+    border-radius: 15px;
+}
+
+.card-description, .card-content {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px; 
+}
+
+.card-content-img {
+    width: 30px;
+}
+
 body {
     text-align: center;
     align-items: center;

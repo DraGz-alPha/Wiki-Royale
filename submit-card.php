@@ -6,11 +6,11 @@
     $update = isset($_POST['update']);
     $delete = isset($_POST['delete']);
 
-    $cardID = filter_input(INPUT_POST, 'cardID', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $cardID = filter_input(INPUT_POST, 'cardID', FILTER_SANITIZE_NUMBER_INT);
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $rarity = filter_input(INPUT_POST, 'rarity', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $elixirCost = filter_input(INPUT_POST, 'elixir_cost', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $elixirCost = filter_input(INPUT_POST, 'elixir_cost', FILTER_SANITIZE_NUMBER_INT);
     $hitSpeed = filter_input(INPUT_POST, 'hit_speed', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $speed = filter_input(INPUT_POST, 'speed', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $targets = $_POST['targets'];
@@ -18,7 +18,7 @@
     $lifetime = filter_input(INPUT_POST, 'lifetime', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $arenaLevel = filter_input(INPUT_POST, 'arena_level', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $spawnSpeed = filter_input(INPUT_POST, 'spawn_speed', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $count = filter_input(INPUT_POST, 'count', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $count = filter_input(INPUT_POST, 'count', FILTER_SANITIZE_NUMBER_INT);
     $radius = filter_input(INPUT_POST, 'radius', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $description = $_POST['description'];
 
@@ -38,6 +38,7 @@
         $radius = null;
     }
 
+    // CUD functionality
     if ($create) {
         $query = "INSERT INTO cards (Name, Rarity, Type, ElixirCost, HitSpeed, Speed, Targets, AttackRange, Lifetime, ArenaLevel, SpawnSpeed, Description, Count, Radius, UserID) 
                   VALUES (:name, :rarity, :type, :elixirCost, :hitSpeed, :speed, :targets, :attackRange, :lifetime, :arenaLevel, :spawnSpeed, :description, :count, :radius, 1)";
