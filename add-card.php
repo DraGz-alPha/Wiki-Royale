@@ -80,11 +80,19 @@
             <input id="spawn_speed" name="spawn_speed" type="number" step="0.1"/>
         </p>
         <p>
+            <label for="count">Count:</label>
+            <input id="count" name="count" type="number" />
+        </p>
+        <p>
+            <label for="radius">Radius:</label>
+            <input id="radius" name="radius" type="number" step="0.1"/>
+        </p>
+        <p>
             <label for="description">Description:</label>
             <textarea id="description" name="description" form="cardDetails"></textarea>
         </p>
         <p>
-            <input type="submit" value="Create" />
+            <input type="submit" name="create" value="Create" />
         </p>
     </form>
 </body>

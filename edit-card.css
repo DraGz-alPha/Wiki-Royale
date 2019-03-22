@@ -1,0 +1,19 @@
+#wrapper {
+    margin-left: 20%;
+    margin-right: 20%;
+    text-align: center;
+    border: 3px black groove;
+    border-radius: 15px;
+    background-image: url("img/backgrounds/card_background.png");
+}
+
+body {
+}
+
+#cardDetails {
+    text-align: center;
+}
+
+#cardDetails p label {
+    text-align: left;
+}
