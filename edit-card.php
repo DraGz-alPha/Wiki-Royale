@@ -2,13 +2,28 @@
     require 'authenticate.php';
     require 'connect.php';
 
+    session_start();
+
+    $userLoggedIn = false;
+
+    // If user is logged in, display welcome message at top of web page.
+    if (isset($_SESSION['user'])) {
+        $user_session = $_SESSION['user'];
+
+        $user_query = "SELECT * FROM users WHERE UserID = $user_session";
+        $statement_user = $db->prepare($user_query);
+        $statement_user->execute();
+
+        $user = $statement_user->fetch();
+        $userLoggedIn = true;
+    }
 
     $cardID = filter_input(INPUT_GET, 'card', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $cardFound = true;
 
-    $query = "SELECT CardID, Name, Rarity, Type, ElixirCost, HitSpeed, Speed, Targets, AttackRange, Lifetime, ArenaLevel, SpawnSpeed, Description, Count, Radius
-    FROM cards 
-    WHERE CardID = $cardID";
+    $query = "SELECT CardID, UserID, Name, Rarity, Type, ElixirCost, HitSpeed, Speed, Targets, AttackRange, Lifetime, ArenaLevel, SpawnSpeed, Description, Count, Radius
+              FROM cards 
+              WHERE CardID = $cardID";
 
     $statement = $db->prepare($query);
     $statement->execute();
@@ -29,14 +44,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
+    <title><?=$card['Name']?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="edit-card.css">
     <script src="main.js"></script>
 </head>
 <body>
     <div id="wrapper">
-        <?php if ($cardFound): ?>
+        <?php if ($cardFound && $userLoggedIn && $user_session == $card['UserID']): ?>
             <form id="cardDetails" action="submit-card.php" method="post">
                 <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="150" />
                 <p>

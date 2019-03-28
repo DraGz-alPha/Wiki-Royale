@@ -1,10 +1,5 @@
 <?php
-    if (isset($_POST['username'])) {
-        $username = filter_input(INPUT_POST, $_POST['username']);
-    }
-    if (isset($_POST['password'])) {
-        $password = filter_input(INPUT_POST, $_POST['password']);
-    }
+    
 ?>
 
 <!DOCTYPE html>
@@ -12,14 +7,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
+    <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="login.css">
     <script src="login.js"></script>
 </head>
 <body>
     <div id="login_form">
-        <form action="submit.php" method="post">
+        <form action="submit-login.php" method="post">
             <p>
                 <label for="email">Email:</label>
                 <input id="email" name="email" type="email" />

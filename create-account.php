@@ -12,7 +12,7 @@
 </head>
 <body>
     <div>
-        <form action="submit.php" method="post">
+        <form action="submit-account.php" method="post">
             <p>
                 <label for="username">Username:</label>
                 <input id="username" name ="username" type="text" />
@@ -24,6 +24,10 @@
             <p>
                 <label for="password">Password:</label>
                 <input id="password" name="password" type="password" />
+            </p>
+            <p>
+                <label for="confirm-password">Confirm password:</label>
+                <input id="confirm-password" name="confirm-password" type="password" />
             </p>
             <p>
                 <input type="submit" value="Create Account" />

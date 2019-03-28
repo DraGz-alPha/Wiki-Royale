@@ -2,6 +2,25 @@
     require 'authenticate.php';
     require 'connect.php';
 
+    session_start();
+
+    // If user is currently logged in, the card will be submitted with their own userID. 
+    // If the user is not logged in, the default userID of 1 shall be used (system id).
+    if (isset($_SESSION['user'])) {
+        $user_session = $_SESSION['user'];
+
+        $user_query = "SELECT * FROM users WHERE UserID = $user_session";
+        $statement_user = $db->prepare($user_query);
+        $statement_user->execute();
+
+        $user = $statement_user->fetch();
+
+        $userID = $user['UserID'];
+    }
+    else {
+        $userID = 1;
+    }
+
     $create = isset($_POST['create']);
     $update = isset($_POST['update']);
     $delete = isset($_POST['delete']);
@@ -41,7 +60,7 @@
     // CUD functionality
     if ($create) {
         $query = "INSERT INTO cards (Name, Rarity, Type, ElixirCost, HitSpeed, Speed, Targets, AttackRange, Lifetime, ArenaLevel, SpawnSpeed, Description, Count, Radius, UserID) 
-                  VALUES (:name, :rarity, :type, :elixirCost, :hitSpeed, :speed, :targets, :attackRange, :lifetime, :arenaLevel, :spawnSpeed, :description, :count, :radius, 1)";
+                  VALUES (:name, :rarity, :type, :elixirCost, :hitSpeed, :speed, :targets, :attackRange, :lifetime, :arenaLevel, :spawnSpeed, :description, :count, :radius, '$userID')";
         
         $statement = $db->prepare($query);
         $statement->bindValue(':name', $name);
@@ -62,6 +81,7 @@
 
         $insert_id = $db->lastInsertId();
 
+        //header("Location: add-levels.php?card=" . $insert_id);
         header("Location: index.php");
     }
     if ($update) {
@@ -97,4 +117,12 @@
 
         header("Location: index.php");
     }
+
+
+    // IGNORE FOR NOW: section will be updated with image upload functionality in the future.
+    //$target_dir = "img/user_cards";
+    //$target_file = $target_dir . basename($_FILES["cardImage"]["name"]);
+    //$uploadReady = true;
+    //$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
 ?>
