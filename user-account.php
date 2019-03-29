@@ -1,6 +1,22 @@
 <?php
     require 'connect.php';
 
+    session_start();
+
+    $userLoggedIn = false;
+
+    // If user is logged in, display welcome message at top of web page.
+    if (isset($_SESSION['user'])) {
+        $user_session = $_SESSION['user'];
+
+        $user_query = "SELECT * FROM users WHERE UserID = $user_session";
+        $statement_user = $db->prepare($user_query);
+        $statement_user->execute();
+
+        $loggedInUser = $statement_user->fetch();
+        $userLoggedIn = true;
+    }
+
     if (isset($_GET['username'])) {
         $username = filter_input(INPUT_GET, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
@@ -41,6 +57,15 @@
 </head>
 <body>
     <?php if ($userFound): ?>
+        <!-- If the current logged in user is an admin account, then display update and delete buttons for the displayed account-->
+        <?php if ($userLoggedIn && $loggedInUser['AccountType'] == "A"): ?>
+            <form id="admin-user-options" action="submit-account.php" method="post">
+                <input type="hidden" name="userID" value=<?=$userID?> />
+                <input type="submit" name="update" value="Update"/>
+                <input type="submit" name="delete" value="Delete" onclick=" return confirm('Are you sure you wish to delete this user?')" />
+            </form>
+        <?php endif ?>
+
         <h1><?=$username?>'s account</h1>
         <div id="user-cards">
             <h4><?=$username?>'s card collection:</h4>

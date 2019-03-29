@@ -30,7 +30,7 @@
                 <input id="confirm-password" name="confirm-password" type="password" />
             </p>
             <p>
-                <input type="submit" value="Create Account" />
+                <input type="submit" name="create" value="Create Account" />
             </p>
         </form>
     </div>

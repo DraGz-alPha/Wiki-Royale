@@ -76,9 +76,8 @@
                 <li><a href="">About</a></li>
                 <?php if ($userLoggedIn && $user_session == 1): ?>
                     <li><a href="admin.php">Admin Tools</a></li>
-                <?php else: ?>
-                    <li><a href="members.php">Members</a></li>
                 <?php endif ?>
+                <li><a href="members.php">Members</a></li>
                 <li><a href="add-card.php">Create Card</a></li>
                 <?php if (!$userLoggedIn): ?>
                     <li><a href="login.php">Log In</a></li>
