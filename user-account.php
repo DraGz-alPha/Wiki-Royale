@@ -1,8 +1,6 @@
 <?php
     require 'connect.php';
-
     session_start();
-
     $userLoggedIn = false;
 
     // If user is logged in, display welcome message at top of web page.
@@ -38,7 +36,8 @@
         $statement->execute();
 
         $cards = $statement->fetchAll();
-    }
+
+    }  
 ?>
 
 <!DOCTYPE html>
@@ -52,32 +51,43 @@
         <title>User not found</title>
     <?php endif ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="user-account.css">
     <script src="main.js"></script>
 </head>
 <body>
     <?php if ($userFound): ?>
-        <!-- If the current logged in user is an admin account, then display update and delete buttons for the displayed account-->
-        <?php if ($userLoggedIn && $loggedInUser['AccountType'] == "A"): ?>
-            <form id="admin-user-options" action="submit-account.php" method="post">
-                <input type="hidden" name="userID" value=<?=$userID?> />
-                <input type="submit" name="update" value="Update"/>
-                <input type="submit" name="delete" value="Delete" onclick=" return confirm('Are you sure you wish to delete this user?')" />
-            </form>
-        <?php endif ?>
-
         <h1><?=$username?>'s account</h1>
         <div id="user-cards">
             <h4><?=$username?>'s card collection:</h4>
             <?php if ($cards != null): ?>
                 <?php foreach ($cards as $card): ?>
-                    <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
+                    <div style="border: 1px black solid; background-color: grey; width: 300px;">
+                        <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
 
-                    <h1><?=$card['Name']?></h1> 
-                    <h3><?=$card['Rarity']?></h3>
-                    <h5><?=$card['Type']?></h5>
-                    <p class="card-description"><?=$card['Description']?></p>
-                    <p><a href="edit-card.php?card=<?=$card['CardID']?>">Edit</a></p>
+                        <h1><?=$card['Name']?></h1> 
+                        <h3><?=$card['Rarity']?></h3>
+                        <h5><?=$card['Type']?></h5>
+                        <p class="card-description"><?=$card['Description']?></p>
+                        <p><a href="edit-card.php?card=<?=$card['CardID']?>">Edit</a></p>
+                        <p><a href="add-comment.php?card=<?=$card['CardID']?>">Comment</a></p>
+                    </div>
+
+                    <!--Returning comments for the given card-->
+                    <?php $cardID = $card['CardID'] ?>
+                    <?php $commentQuery = "SELECT * FROM comments WHERE CardID = $cardID" ?>
+                    <?php $comment_statement = $db->prepare($commentQuery) ?>
+                    <?php $comment_statement->execute() ?>
+                    <?php $comments = $comment_statement->fetchAll() ?>
+                    <?php if ($comments != null): ?>
+                        <?php foreach($comments as $comment): ?>
+                            <h4>COMMENT</h4>
+                            <p>Rating: <?php for ($i = 0; $i < $comment['Rating']; $i++): ?><img src="img/comment/Star.jpg" alt="" width="30"><?php endfor ?></p>
+                            <p>Content: <?=$comment['Content']?></p>
+                            <h4>___________</h4>
+                        <?php endforeach ?>
+                    <?php endif ?>  
+                    <!--Finished returning card comments-->
+
                 <?php endforeach ?>
             <?php else: ?>
                 <p><?=$username?> doesn't have any cards yet!</p>

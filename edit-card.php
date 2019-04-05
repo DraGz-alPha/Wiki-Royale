@@ -51,7 +51,7 @@
 </head>
 <body>
     <div id="wrapper">
-        <?php if ($cardFound && $userLoggedIn && $user_session == $card['UserID']): ?>
+        <?php if ($cardFound && $userLoggedIn && $user_session == $card['UserID'] || $user['AccountType'] == "A"): ?>
             <form id="cardDetails" action="submit-card.php" method="post">
                 <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="150" />
                 <p>
