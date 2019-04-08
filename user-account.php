@@ -3,7 +3,7 @@
     session_start();
     $userLoggedIn = false;
 
-    // If user is logged in, display welcome message at top of web page.
+    // If user is logged in, display welcome message at top of web page and set teh userLoggedIn variable to true.
     if (isset($_SESSION['user'])) {
         $user_session = $_SESSION['user'];
 
@@ -15,10 +15,12 @@
         $userLoggedIn = true;
     }
 
+    // If a username GET parameter is set, sanitize it and dassign the value to the username variable.
     if (isset($_GET['username'])) {
         $username = filter_input(INPUT_GET, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
 
+    // Query the database with the username specified from the GET parameter.
     $query = "SELECT UserID FROM users WHERE Username = '$username'";
     $statement = $db->prepare($query);
     $statement->execute();
@@ -26,6 +28,7 @@
 
     $userFound = true;
 
+    // If a user is found in the database, query the cards table to retrieve the user's card collection.
     if ($user == null) {
         $userFound = false;
     }
@@ -36,7 +39,6 @@
         $statement->execute();
 
         $cards = $statement->fetchAll();
-
     }  
 ?>
 
@@ -45,8 +47,9 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--If the searched user is found in the database, change the tab title to be the user's username-->
     <?php if ($userFound): ?>
-        <title><?=$username?></title>
+        <title><?=$username?>'s Profile</title>
     <?php else: ?>
         <title>User not found</title>
     <?php endif ?>
@@ -55,10 +58,13 @@
     <script src="main.js"></script>
 </head>
 <body>
+    <!--If the searched user is found in the database, return the associated information, otherwise display that the user doesn't exist in the database-->
     <?php if ($userFound): ?>
         <h1><?=$username?>'s account</h1>
         <div id="user-cards">
             <h4><?=$username?>'s card collection:</h4>
+
+            <!--If the user created cards, display them on their profile, otherwise display "user doesn't have any cards yet!"-->
             <?php if ($cards != null): ?>
                 <?php foreach ($cards as $card): ?>
                     <div style="border: 1px black solid; background-color: grey; width: 300px;">
@@ -78,6 +84,7 @@
                     <?php $comment_statement = $db->prepare($commentQuery) ?>
                     <?php $comment_statement->execute() ?>
                     <?php $comments = $comment_statement->fetchAll() ?>
+                    <!--If the card has comments associated with it, display them, otherwise display nothing-->
                     <?php if ($comments != null): ?>
                         <?php foreach($comments as $comment): ?>
                             <h4>COMMENT</h4>

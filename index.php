@@ -82,8 +82,8 @@
                 <?php if (!$userLoggedIn): ?>
                     <li><a href="login.php">Log In</a></li>
                 <?php else: ?>
-                    <li><a href="logout.php">Log Out</a></li>
                     <li><a href="my-account.php">My Account</a></li>
+                    <li><a href="logout.php">Log Out</a></li>                 
                     <!--<select>
                         <option>Your Account</option>
                         <option>My Cards</option>
