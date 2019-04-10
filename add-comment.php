@@ -48,6 +48,8 @@
                 <label for="content">Content:</label>
                 <textarea id="content" name="content"></textarea>
             </p>
+                <img src="captcha.php" alt="Captcha" /><br>
+                <input type="text" name="captcha" />
             <p>
                 <input type="hidden" name="username" value=<?=$username?> />
                 <input type="hidden" name="cardID" value=<?=$cardID?> />

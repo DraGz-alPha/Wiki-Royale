@@ -8,15 +8,14 @@
     $update = isset($_POST['update']);
     $delete = isset($_POST['delete']);
 
-    $cardID = $_POST['cardID'];
     $ratingSet = isset($_POST['rating']);
     $contentSet = isset($_POST['content']);
+    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     // If rating and content sections of the form are set, then put their values into variables.
     if ($ratingSet && $contentSet) {
         $rating = filter_input(INPUT_POST, 'rating', FILTER_SANITIZE_NUMBER_INT);
         $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $username = $_POST['username'];
         $formValid = true;
     }
 
@@ -34,13 +33,18 @@
     }
 
     if ($userLoggedIn) {
+        // Since form data doesn't need to be valid to delete a comment, it skips that check.
+        if ($delete) {
+            $commentID = filter_input(INPUT_POST, 'commentID', FILTER_SANITIZE_NUMBER_INT);
+            DeleteComment($db, $commentID, $username);
+        }
+
+        // If the form is valid, checks done within the if statement can be performed.
         if ($formValid) {
             // If user is creating a comment, call the CreateComment function.
             if ($create) {
+                $cardID = filter_input(INPUT_POST, 'cardID', FILTER_SANITIZE_NUMBER_INT);
                 CreateComment($db, $cardID, $userID, $rating, $content, $username);
-            }
-            if ($delete) {
-                DeleteComment();
             }
             if ($update) {
                 UpdateComment();
@@ -66,6 +70,18 @@
         $statement->bindValue(':content', $content);
         $statement->execute();
         $insert_id = $db->lastInsertId();
+
+        header("Location: user-account.php?username=$username");
+    }
+
+    // Deletes a specified comment.
+    function DeleteComment($db, $commentID, $username) {
+
+        $query = "DELETE FROM comments WHERE CommentID = :CommentID";
+        
+        $statement = $db->prepare($query);
+        $statement->bindValue(':CommentID', $commentID, PDO::PARAM_INT);
+        $statement->execute();
 
         header("Location: user-account.php?username=$username");
     }
