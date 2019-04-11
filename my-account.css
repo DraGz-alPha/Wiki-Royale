@@ -1,0 +1,40 @@
+#wrapper {
+    margin: 0px auto;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#index_top_nav {
+    border: 1px black inset;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+    background-color: #ffdd00;
+}
+
+#index_top_nav ul {
+    display: flex;
+    list-style: none;
+    justify-content: space-evenly;
+}
+
+#index_top_nav ul li {
+    font-family: 'Germania One', cursive;
+    size: 5.85em;
+    color: black
+}
+
+body {
+    text-align: center;
+    align-items: center;
+    align-content: center;
+    background-color: grey;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: lightgray;
+}

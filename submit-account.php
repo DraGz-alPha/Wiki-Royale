@@ -10,8 +10,9 @@
     $admin_update = isset($_POST['admin-update']);
     $admin_delete = isset($_POST['admin-delete']);
 
-
+    // Assuming all form data is valid.
     $formIsValid = true;
+
     $usernameSet = isset($_POST['username']);
     $emailSet = isset($_POST['email']);
     $passwordSet = isset($_POST['password']);
@@ -21,7 +22,7 @@
         $userID = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_NUMBER_INT);
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);     
         $confirmPassword = filter_input(INPUT_POST, 'confirm-password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if (strlen($password) > 6 && strlen($confirmPassword) > 6) {
@@ -41,24 +42,75 @@
         echo 'All fields must be filled!';
     }
 
-    
+    // If all form data is valid, allow access to CRUD functionality.
     if ($formIsValid) {
         if ($create || $admin_create) {
-            $userExists = CheckIfUserExists($username, $email);
-
+            $userExists = CheckIfUserExists($db, $username, $email);
+            
             if ($userExists == "User doesn't exist") {
-                CreateUser($username, $email, $password, $admin_create);
+                // If user decided to upload a profile picture, commit the image name to the users table in the database.
+                $profilePictureFileName = null;
+                
+                if ($_FILES["profile-image"]["name"] != null) {
+                    $target_dir = "img/Profile_Pics/";
+                    $target_file = $target_dir . basename($_FILES["profile-image"]["name"]);
+                    $uploadOk = 1;
+                    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+                    // Check if image file is a actual image or fake image
+                    if(isset($_POST["submit"])) {
+                        $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+                        if($check !== false) {
+                            echo "File is an image - " . $check["mime"] . ".";
+                            $uploadOk = 1;
+                        } else {
+                            echo "File is not an image.";
+                            $uploadOk = 0;
+                        }
+                    }
+                    // Check if file already exists
+                    if (file_exists($target_file)) {
+                        echo "Sorry, file already exists.";
+                        $uploadOk = 0;
+                    }
+                    // Check file size
+                    if ($_FILES["profile-image"]["size"] > 500000) {
+                        echo "Sorry, your file is too large.";
+                        $uploadOk = 0;
+                    }
+                    // Allow certain file formats
+                    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+                    && $imageFileType != "gif" ) {
+                        echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+                        $uploadOk = 0;
+                    }
+                    // Check if $uploadOk is set to 0 by an error
+                    if ($uploadOk == 0) {
+                        echo "Sorry, your file was not uploaded.";
+                    // if everything is ok, try to upload file
+                    } else {
+                        if (move_uploaded_file($_FILES["profile-image"]["tmp_name"], $target_file)) {
+                            echo "The file ". basename( $_FILES["profile-image"]["name"]). " has been uploaded.";
+                            $profilePictureFileName = basename( $_FILES["profile-image"]["name"]);
+                        } else {
+                            echo "Sorry, there was an error uploading your file.";
+                        }
+                    }
+                }
+
+                CreateUser($db, $username, $email, $password, $profilePictureFileName, $admin_create);
             }
             else {
                 echo $userExists;
             }
         }
-     
+        
+        // Checking if user is updating their profile.
         if ($update || $admin_update) {
-            $userExists = CheckIfUserExists($username, $email);
+            $userExists = CheckIfUserExists($db, $username, $email);
 
             if ($userExists == "User doesn't exist") {
-                UpdateUser($userID, $username, $email, $password, $admin_update);
+
+                UpdateUser($db, $userID, $username, $email, $password, $profilePictureFileName, $admin_update);
             }
             else {
                 echo $userExists;
@@ -75,8 +127,7 @@
     }
     
     // Queries the database to ensure no user exists with the same information from the form.
-    function CheckIfUserExists($username, $email) {
-        require 'connect.php';
+    function CheckIfUserExists($db, $username, $email) {
 
         $err_message = "User doesn't exist";
 
@@ -109,8 +160,7 @@
     }
 
     // Updates a specified user account based on the userID.
-    function UpdateUser($userID, $username, $email, $password, $admin_update) {
-        require 'connect.php';
+    function UpdateUser($db, $userID, $username, $email, $password, $profilePictureFileName, $admin_update) {
 
         $query = "UPDATE users SET Username = :username, Email = :email, Password = :password WHERE UserID = :userID";
 
@@ -127,30 +177,72 @@
     }
 
     // Creates a new user account.
-    function CreateUser ($username, $email, $password, $admin_create) {
-        require 'connect.php';
+    function CreateUser ($db, $username, $email, $password, $profilePictureFileName, $admin_create) {
         
-        $CheckIfUserExists_Result = CheckIfUserExists($username, $email);
+        $CheckIfUserExists_Result = CheckIfUserExists($db, $username, $email);
 
         if ($CheckIfUserExists_Result) {
-            $query = "INSERT INTO users (Username, Email, Password, AccountType) VALUES (:username, :email, :password, :accountType)";
+
+            if ($profilePictureFileName != null) {
+                $query = "INSERT INTO users (Username, Email, Password, AccountType, ProfilePicture) VALUES (:username, :email, :password, :accountType, :profilePicture)";
+            }
+            else {
+                $query = "INSERT INTO users (Username, Email, Password, AccountType) VALUES (:username, :email, :password, :accountType)";
+            }
 
             $statement = $db->prepare($query);
             $statement->bindValue(':username', $username);
             $statement->bindValue(':email', $email);
             $statement->bindValue(':password', $password);
             $statement->bindValue(':accountType', 'U');
-            $statement->execute();
 
+            // If the profile picture isn't null, upload it to the users table.
+            if ($profilePictureFileName != null) {
+                $statement->bindValue(':profilePicture', $profilePictureFileName);
+            }
+            $statement->execute();
             $insert_id = $db->lastInsertId();
 
-            if (!$admin_create) {
+            if ($admin_create) {
                 header("Location: admin.php");
             }
             else {
                 header("Location: login.php");
             }
         } 
+
+        
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Deleting image
+    if (isset($_POST['deleteImage'])) {
+        $update->bindvalue(':image', null);
+        unlink($_POST['deleteImage']);
+    }
 ?>
