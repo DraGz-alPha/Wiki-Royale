@@ -1,14 +1,48 @@
 <?php
+    session_start();
+
+    require_once('ImageResize.php');
     require 'authenticate.php';
     require 'connect.php';
+
+    $userLoggedIn = true;
+    // If user is logged in, display welcome message at top of web page.
+    if (isset($_SESSION['user'])) {
+        $user_session = $_SESSION['user'];
+
+        $user_query = "SELECT * FROM users WHERE UserID = $user_session";
+        $statement_user = $db->prepare($user_query);
+        $statement_user->execute();
+
+        $user = $statement_user->fetch();
+        $userLoggedIn = true;
+    }
 
     $create = isset($_POST['create']);
     $update = isset($_POST['update']);
     $delete = isset($_POST['delete']);
+    $deleteProfilePicture = isset($_POST['deleteImage']);
 
     $admin_create = isset($_POST['admin-create']);
     $admin_update = isset($_POST['admin-update']);
     $admin_delete = isset($_POST['admin-delete']);
+
+    //Deleting profile picture
+    if ($deleteProfilePicture) {
+        if ($userLoggedIn) {
+            $userID = $user['UserID'];
+            $profilePicture = $_POST['profilePictureFileName'];
+            $query = "UPDATE users SET ProfilePicture = :profilePicture WHERE UserID = :userID";
+            $statement = $db->prepare($query);
+            $statement->bindvalue(':userID', $userID);
+            $statement->bindvalue(':profilePicture', null);
+            $statement->execute();
+            unlink("img/Profile_Pics/" . $profilePicture);
+
+            echo 'image removed';
+            //header("Location: my-account.php");
+        }
+    }
 
     // Assuming all form data is valid.
     $formIsValid = true;
@@ -89,8 +123,25 @@
                     // if everything is ok, try to upload file
                     } else {
                         if (move_uploaded_file($_FILES["profile-image"]["tmp_name"], $target_file)) {
-                            echo "The file ". basename( $_FILES["profile-image"]["name"]). " has been uploaded.";
+                            
+                            // File upload path.
+                            function file_upload_path($original_filename, $upload_subfolder_name = 'img/Profile_Pics') 
+                            {
+                                $current_folder = dirname(__FILE__);
+                                $path_segments = [$current_folder, $upload_subfolder_name, basename($original_filename)];
+                                return join(DIRECTORY_SEPARATOR, $path_segments);
+                            }
+                            
+                            // If the image passes all requirements, resize and upload.
                             $profilePictureFileName = basename( $_FILES["profile-image"]["name"]);
+                            $temporary_image_path = $_FILES['profile-image']['tmp_name'];
+                            $new_image_path       = file_upload_path($profilePictureFileName);
+
+                            $image = new ImageResize($temporary_image_path);
+                            $image->resizeToHeight(200);
+                            $image->save($new_image_path);
+                            move_uploaded_file($temporary_image_path, $new_image_path);
+                            $imageName = $new_image_path;
                         } else {
                             echo "Sorry, there was an error uploading your file.";
                         }
@@ -183,23 +234,14 @@
 
         if ($CheckIfUserExists_Result) {
 
-            if ($profilePictureFileName != null) {
-                $query = "INSERT INTO users (Username, Email, Password, AccountType, ProfilePicture) VALUES (:username, :email, :password, :accountType, :profilePicture)";
-            }
-            else {
-                $query = "INSERT INTO users (Username, Email, Password, AccountType) VALUES (:username, :email, :password, :accountType)";
-            }
+            $query = "INSERT INTO users (Username, Email, Password, AccountType, ProfilePicture) VALUES (:username, :email, :password, :accountType, :profilePicture)";
 
             $statement = $db->prepare($query);
             $statement->bindValue(':username', $username);
             $statement->bindValue(':email', $email);
             $statement->bindValue(':password', $password);
             $statement->bindValue(':accountType', 'U');
-
-            // If the profile picture isn't null, upload it to the users table.
-            if ($profilePictureFileName != null) {
-                $statement->bindValue(':profilePicture', $profilePictureFileName);
-            }
+            $statement->bindValue(':profilePicture', $profilePictureFileName);
             $statement->execute();
             $insert_id = $db->lastInsertId();
 
@@ -209,40 +251,8 @@
             else {
                 header("Location: login.php");
             }
+
+            echo $profilePictureFileName;
         } 
-
-        
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //Deleting image
-    if (isset($_POST['deleteImage'])) {
-        $update->bindvalue(':image', null);
-        unlink($_POST['deleteImage']);
     }
 ?>

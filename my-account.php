@@ -35,6 +35,13 @@
 <body>
     <!--If the user is logged in, display all page data, otherwise diplay an error message-->
     <?php if ($userLoggedIn): ?>
+        <?php if (isset($user['ProfilePicture'])): ?>
+            <img src="img/Profile_Pics/<?=$user['ProfilePicture']?>" alt="<?=$user['ProfilePicture']?>" />
+            <form action="submit-account.php" method="post"> 
+                <input type="submit" name="deleteImage" id="deleteImage" value="Delete" onclick=" return confirm('Are you sure you wish to delete your profile picture?')" />
+                <input type="hidden" name="profilePictureFileName" value=<?=$user['ProfilePicture']?> />
+            </form>
+        <?php endif ?>
         <div id="index_top_nav">
             <ul>
                 <li><a href="index.php">Home</a></li>
@@ -42,9 +49,6 @@
                 <li><a href="">Members</a></li> 
                 <li><a href="add-card.php">Create Card</a></li>
                 <li><a href="logout.php">Log Out</a></li>
-                <?php if (isset($user['ProfilePicture'])): ?>
-                    <li><img src="img/Profile_Pics/<?=$user['ProfilePicture']?>" alt="<?=$user['ProfilePicture']?>" /></li>
-                <?php endif ?>
             </ul>
         </div>
 
