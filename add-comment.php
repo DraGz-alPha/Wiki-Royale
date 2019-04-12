@@ -1,4 +1,5 @@
 <?php
+    session_start();
     require 'connect.php';
     $validCard = false;
 
@@ -50,10 +51,10 @@
                 <label for="content">Content:</label>
                 <textarea id="content" name="content"></textarea>
                 <script>CKEDITOR.replace('content')</script>
-            </p>
-                <img src="captcha.php" alt="Captcha" /><br>
+
+                <img src="captcha.php" /><br>
                 <input type="text" name="captcha" />
-            <p>
+
                 <input type="hidden" name="username" value=<?=$username?> />
                 <input type="hidden" name="cardID" value=<?=$cardID?> />
                 <input type="submit" name="create" value="Create"/>

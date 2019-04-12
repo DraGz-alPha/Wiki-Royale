@@ -31,16 +31,22 @@
     if ($deleteProfilePicture) {
         if ($userLoggedIn) {
             $userID = $user['UserID'];
-            $profilePicture = $_POST['profilePictureFileName'];
+            
+            $profilePicture_Query = "SELECT ProfilePicture FROM users WHERE UserID = :userID";
+            $profilePicture_statement = $db->prepare($profilePicture_Query);
+            $profilePicture_statement->bindvalue(':userID', $userID);
+            $profilePicture_statement->execute();
+            
+            $profilePictureFileName = $profilePicture_statement->fetch();
+
             $query = "UPDATE users SET ProfilePicture = :profilePicture WHERE UserID = :userID";
             $statement = $db->prepare($query);
             $statement->bindvalue(':userID', $userID);
             $statement->bindvalue(':profilePicture', null);
             $statement->execute();
-            unlink("img/Profile_Pics/" . $profilePicture);
+            unlink("img/Profile_Pics/" . $profilePictureFileName['ProfilePicture']);
 
-            echo 'image removed';
-            //header("Location: my-account.php");
+            header("Location: my-account.php");
         }
     }
 
@@ -137,9 +143,10 @@
                             $temporary_image_path = $_FILES['profile-image']['tmp_name'];
                             $new_image_path       = file_upload_path($profilePictureFileName);
 
-                            $image = new ImageResize($temporary_image_path);
-                            $image->resizeToHeight(200);
-                            $image->save($new_image_path);
+                            $resizeObj = new resize('img/Profile_Pics/' . $profilePictureFileName);
+                            $resizeObj -> resizeImage(250, 250, 0);
+                            $resizeObj -> saveImage('img/Profile_Pics/' . $profilePictureFileName, 100);
+
                             move_uploaded_file($temporary_image_path, $new_image_path);
                             $imageName = $new_image_path;
                         } else {
