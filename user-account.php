@@ -96,13 +96,13 @@
 
                             <h4><?=$commentUsername['username']?></h4>
                             <p>Rating: <?php for ($i = 0; $i < $comment['Rating']; $i++): ?><img src="img/comment/Star.jpg" alt="" width="25"><?php endfor ?></p>
-                            <p>Content: <?=$comment['Content']?></p>
+                            <?=$comment['Content']?>
                             <p>Posted on: <?=date("F d, Y", strtotime($comment['Date_Posted']))?><p>
 
                             <!--If the currently logged in user is an administrator, then provide update and delete options for each comment-->
                             <?php if ($loggedInUser['AccountType'] == 'A'): ?>
                                 <form id="" action="submit-comment.php" method="post">
-                                <input type="submit" name="delete" value="Delete" onclick=" return confirm('Are you sure you wish to delete this card?')" />
+                                <input type="submit" name="delete" value="Delete" onclick=" return confirm('Are you sure you wish to delete this comment?')" />
                                 <input type="hidden" name="commentID" value=<?=$comment['CommentID']?> />
                                 <input type="hidden" name="username" value=<?=$username?> />
                             <?php endif ?>

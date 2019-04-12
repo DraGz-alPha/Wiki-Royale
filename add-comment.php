@@ -34,7 +34,9 @@
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css">
-    <script src="main.js"></script>
+
+    <!--Include CKEditor-->
+    <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
 </head>
 <body>
     <?php if ($validCard): ?>
@@ -47,6 +49,7 @@
             <p>
                 <label for="content">Content:</label>
                 <textarea id="content" name="content"></textarea>
+                <script>CKEDITOR.replace('content')</script>
             </p>
                 <img src="captcha.php" alt="Captcha" /><br>
                 <input type="text" name="captcha" />
@@ -55,6 +58,7 @@
                 <input type="hidden" name="cardID" value=<?=$cardID?> />
                 <input type="submit" name="create" value="Create"/>
             </p>
+
         </form>
     <?php else: ?>
         <p>That card doesn't exist!</p>

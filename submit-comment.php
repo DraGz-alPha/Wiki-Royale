@@ -15,7 +15,7 @@
     // If rating and content sections of the form are set, then put their values into variables.
     if ($ratingSet && $contentSet) {
         $rating = filter_input(INPUT_POST, 'rating', FILTER_SANITIZE_NUMBER_INT);
-        $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $content = $_POST['content'];
         $formValid = true;
     }
 
