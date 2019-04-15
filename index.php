@@ -19,8 +19,6 @@
         $statement_user->execute();
 
         $user = $statement_user->fetch();
-
-        echo "Welcome back " . $user['Username'];
         $userLoggedIn = true;
     }
 
@@ -64,113 +62,134 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Wiki Royale</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel='stylesheet' type='text/css' href='bootstrap/css/bootstrap.min.css'>
     <link rel="stylesheet" type="text/css" media="screen" href="index.css">
     <link href="https://fonts.googleapis.com/css?family=Germania+One" rel="stylesheet"> 
 </head>
 <body>
     <header>
-        <h1>Wiki Royale</h1>
-        <div id="index_top_nav">
-            <ul>
-                <li><a href="">Home</a></li>
-                <li><a href="">About</a></li>
-                <?php if ($userLoggedIn && $user_session == 1): ?>
-                    <li><a href="admin.php">Admin Tools</a></li>
-                <?php endif ?>
-                <li><a href="members.php">Members</a></li>
-                <li><a href="add-card.php">Create Card</a></li>
-                <?php if (!$userLoggedIn): ?>
-                    <li><a href="login.php">Log In</a></li>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="index.php">Wiki Royale</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.php">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="members.php">Members</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="add-card.php">Create Card</a>
+                    </li>
+                </ul>
+                <?php if ($userLoggedIn): ?> 
+                    <!--Account drop-down list-->
+                    <div class="btn-group">
+                        <?php if ($user['AccountType'] == 'A'): ?>
+                            <button type="button" class="btn btn-danger">Welcome, <?=$user['Username']?> [A]</button>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-danger">Welcome, <?=$user['Username']?></button>
+                        <?php endif ?>
+                        <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="my-account.php">My Account</a>
+                            <?php if ($user['AccountType'] == 'A'): ?>
+                                <a class="dropdown-item" href="admin.php">Admin Tools</a>
+                            <?php endif ?>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="logout.php">Sign out</a>
+                        </div>
+                    </div>
                 <?php else: ?>
-                    <li><a href="my-account.php">My Account</a></li>
-                    <li><a href="logout.php">Log Out</a></li>                 
-                    <!--<select>
-                        <option>Your Account</option>
-                        <option>My Cards</option>
-                        <option>My Decks</option>
-                        <option>Log Out</option>
-                    </select>-->
+                    <a class="btn btn-danger" href="login.php" role="button">Sign in</a>
                 <?php endif ?>
-            </ul>
-        </div>
+            </div>
+            <?php if ($userLoggedIn && $user['ProfilePicture'] != null): ?>
+                <img src="img/Profile_Pics/<?=$user['ProfilePicture']?>" alt="<?=$user['ProfilePicture']?>" />
+            <?php endif ?>
+        </nav>
     </header>
 
-        <form action="index.php" method="post">
-            <label for="sort">Sort by:</label>
-            <select id="sort" name="sort">
-                <?php foreach ($orderOptions as $orderOption): ?>
-                    <?php if ($orderOption == $order): ?>
-                        <option selected><?=$orderOption?></option>
-                    <?php else: ?>
-                        <option><?=$orderOption?></option>
-                    <?php endif ?>
-                <?php endforeach ?>
-            </select>
-
-            <label for="view">View:</label>
-            <select id=" view" name="view">
-                <?php foreach ($viewOptions as $viewOption): ?>
-                    <?php if ($viewOption == $view): ?>
-                        <option selected><?=$viewOption?></option>
-                    <?php else: ?>
-                        <option><?=$viewOption?></option>
-                    <?php endif ?>
-                <?php endforeach ?>
-            </select>
-            <input type="submit" value="Change" />
-        </form>
-
-        <div id="wrapper">
-            <?php foreach ($cards as $card): ?>
-                <div class="card">
-                    <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
-
-                    <?php if ($expandedDetails): ?>
-                        <h1><?=$card['Name']?></h1> 
-                        <h3><?=$card['Rarity']?></h3>
-                        <h5><?=$card['Type']?></h5>
-                        <p class="card-description"><?=$card['Description']?></p>
-
-                        <div class="card-content">
-                            <?php if ($card['HitSpeed']): ?>
-                                <p><img class="card-content-img" src="img/card-details/HitSpeed.png" alt=""> Hit Speed ............... <?=$card['HitSpeed']?> sec</p>
-                            <?php endif ?>
-                            <?php if ($card['Speed']): ?>
-                                <p><img class="card-content-img" src="img/card-details/Speed.png" alt=""> Speed ............... <?=$card['Speed']?></p>
-                            <?php endif ?>
-                                <p><img class="card-content-img" src="img/card-details/Targets.png" alt=""> Targets ............... <?=$card['Targets']?></p>
-                            <?php if ($card['AttackRange']): ?>
-                                <p><img class="card-content-img" src="img/card-details/AttackRange.png" alt=""> Attack Range ............... <?=$card['AttackRange']?></p>
-                            <?php endif ?>
-                            <?php if ($card['Lifetime']): ?>
-                                <p><img class="card-content-img" src="img/card-details/Time.png" alt=""> Lifetime ............... <?=$card['Lifetime']?> sec</p>
-                            <?php endif ?>
-                            <?php if ($card['SpawnSpeed']): ?>
-                                <p><img class="card-content-img" src="img/card-details/Time.png" alt=""> Spawn Speed ............... <?=$card['SpawnSpeed']?> sec</p>
-                            <?php endif ?>
-                            <?php if ($card['Radius']): ?>
-                                <p><img class="card-content-img" src="img/card-details/Radius.png" alt=""> Radius ............... <?=$card['Radius']?></p>
-                            <?php endif ?>
-                            <?php if ($card['Count']): ?>
-                                <p><img class="card-content-img" src="img/card-details/Count.png" alt=""> Count ............... <?=$card['Count']?></p>
-                            <?php endif ?>
-                        </div>
-
-                        <div id="card-levels">
-                            <p><?=$cardLevels['Level']?></p>
-                        </div>
-
-                        <h4 style="font-family: font-family: 'Germania One', cursive;">Unlocks at arena <?=$card['ArenaLevel']?></h4> 
-                    <?php endif ?>
-                    
-                    <!-- If user is logged in as system administrator, then provide an edit link for system cards. -->
-                    <?php if (isset($_SESSION['user']) && $card['UserID'] == $user_session): ?>
-                        <p><a href="edit-card.php?card=<?=$card['CardID']?>">Edit</a></p>
-                    <?php endif ?>
-                </div>
+    <form action="index.php" method="post">
+        <label for="sort">Sort by:</label>
+        <select id="sort" name="sort">
+            <?php foreach ($orderOptions as $orderOption): ?>
+                <?php if ($orderOption == $order): ?>
+                    <option selected><?=$orderOption?></option>
+                <?php else: ?>
+                    <option><?=$orderOption?></option>
+                <?php endif ?>
             <?php endforeach ?>
-        </div>
+        </select>
+
+        <label for="view">View:</label>
+        <select id=" view" name="view">
+            <?php foreach ($viewOptions as $viewOption): ?>
+                <?php if ($viewOption == $view): ?>
+                    <option selected><?=$viewOption?></option>
+                <?php else: ?>
+                    <option><?=$viewOption?></option>
+                <?php endif ?>
+            <?php endforeach ?>
+        </select>
+        <input type="submit" value="Change" />
+    </form>
+
+    <div id="wrapper">
+        <?php foreach ($cards as $card): ?>
+            <div class="card">
+                <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
+
+                <?php if ($expandedDetails): ?>
+                    <h1><?=$card['Name']?></h1> 
+                    <h3><?=$card['Rarity']?></h3>
+                    <h5><?=$card['Type']?></h5>
+                    <p class="card-description"><?=$card['Description']?></p>
+
+                    <div class="card-content">
+                        <?php if ($card['HitSpeed']): ?>
+                            <p><img class="card-content-img" src="img/card-details/HitSpeed.png" alt=""> Hit Speed ............... <?=$card['HitSpeed']?> sec</p>
+                        <?php endif ?>
+                        <?php if ($card['Speed']): ?>
+                            <p><img class="card-content-img" src="img/card-details/Speed.png" alt=""> Speed ............... <?=$card['Speed']?></p>
+                        <?php endif ?>
+                            <p><img class="card-content-img" src="img/card-details/Targets.png" alt=""> Targets ............... <?=$card['Targets']?></p>
+                        <?php if ($card['AttackRange']): ?>
+                            <p><img class="card-content-img" src="img/card-details/AttackRange.png" alt=""> Attack Range ............... <?=$card['AttackRange']?></p>
+                        <?php endif ?>
+                        <?php if ($card['Lifetime']): ?>
+                            <p><img class="card-content-img" src="img/card-details/Time.png" alt=""> Lifetime ............... <?=$card['Lifetime']?> sec</p>
+                        <?php endif ?>
+                        <?php if ($card['SpawnSpeed']): ?>
+                            <p><img class="card-content-img" src="img/card-details/Time.png" alt=""> Spawn Speed ............... <?=$card['SpawnSpeed']?> sec</p>
+                        <?php endif ?>
+                        <?php if ($card['Radius']): ?>
+                            <p><img class="card-content-img" src="img/card-details/Radius.png" alt=""> Radius ............... <?=$card['Radius']?></p>
+                        <?php endif ?>
+                        <?php if ($card['Count']): ?>
+                            <p><img class="card-content-img" src="img/card-details/Count.png" alt=""> Count ............... <?=$card['Count']?></p>
+                        <?php endif ?>
+                    </div>
+
+                    <div id="card-levels">
+                        <p><?=$cardLevels['Level']?></p>
+                    </div>
+
+                    <h4 style="font-family: font-family: 'Germania One', cursive;">Unlocks at arena <?=$card['ArenaLevel']?></h4> 
+                <?php endif ?>
+                
+                <!-- If user is logged in as system administrator, then provide an edit link for system cards. -->
+                <?php if (isset($_SESSION['user']) && $card['UserID'] == $user_session): ?>
+                    <p><a href="edit-card.php?card=<?=$card['CardID']?>">Edit</a></p>
+                <?php endif ?>
+            </div>
+        <?php endforeach ?>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

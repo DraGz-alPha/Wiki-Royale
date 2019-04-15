@@ -19,7 +19,6 @@
                 <input type="submit" class="fadeIn fourth" value="Log In" />
                 </p>
             </form>
-            <!-- Remind Passowrd -->
             <div id="formFooter">
                 <a class="underlineHover" href="create-account.php">Don't have an account? Create one here!</a>
             </div>

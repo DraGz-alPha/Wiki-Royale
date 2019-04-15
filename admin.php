@@ -5,14 +5,25 @@
     $adminUser = false;
     $requestUserModification = false;
 
-    if (isset($_SESSION['user']) && $_SESSION['user'] == 1) {
 
-        $adminUser = true;
-        $query = "SELECT * FROM users";
-        $statement = $db->prepare($query);
-        $statement->execute();
-        $users = $statement->fetchAll();
-    }  
+    // If user is logged in, display welcome message at top of web page.
+    if (isset($_SESSION['user'])) {
+        $user_session = $_SESSION['user'];
+
+        $user_query = "SELECT * FROM users WHERE UserID = $user_session";
+        $statement_user = $db->prepare($user_query);
+        $statement_user->execute();
+
+        $user = $statement_user->fetch();
+        if ($user['AccountType'] == 'A') {
+            $adminUser = true;
+            $query = "SELECT * FROM users";
+            $statement = $db->prepare($query);
+            $statement->execute();
+            $users = $statement->fetchAll();
+        }
+        $userLoggedIn = true;
+    }
 
     if (isset($_GET['user'])) {
         $requestUserModification = true;
@@ -32,21 +43,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' type='text/css' href='bootstrap/css/bootstrap.min.css'>
     <link rel="stylesheet" type="text/css" media="screen" href="main.css">
     <script src="main.js"></script>
 </head>
 <body>
     <?php if ($adminUser): ?>
-        <table>
+        <table class="table">
             <tr>
-                <th></th>
-                <th>UserID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Password</th>
-                <th>Country</th>
-                <th>Favourite Card</th>
-                <th>Account Type</th>
+                <th scope="col"></th>
+                <th scope="col">UserID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Password</th>
+                <th scope="col">Country</th>
+                <th scope="col">Favourite Card</th>
+                <th scope="col">Account Type</th>
                 <th></th>
             </tr>
             <?php foreach($users as $user): ?>
