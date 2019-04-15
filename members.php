@@ -23,7 +23,7 @@
         $returnedUsersQuery = "SELECT UserID, Username FROM users WHERE Username LIKE '%$searchText%' AND UserID != '$user_sessionID'";
         $statement_returnedUsers = $db->prepare($returnedUsersQuery);
         $statement_returnedUsers->execute();
-
+        
         $returnedUsers = $statement_returnedUsers->fetchAll();
 
         if ($returnedUsers != null) {

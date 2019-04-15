@@ -6,25 +6,24 @@
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="login.css">
-    <script src="login.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-    <div id="login_form">
-        <form action="submit-login.php" method="post">
-            <p>
-                <label for="email">Email:</label>
-                <input id="email" name="email" type="email" />
-            </p>
-            <p>
-                <label for="password">Password:</label>
-                <input id="password" name="password" type="password" />
-            </p>
-            <p>
-                <input type="submit" value="Log In" />
-            </p>
-        </form>
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <form action="submit-login.php" method="post">
+                <input type="text" id="email" class="fadeIn second" name="email" placeholder="email">
+                <input type="password" id="password" class="fadeIn third" name="password" placeholder="password">
+                <input type="submit" class="fadeIn fourth" value="Log In" />
+                </p>
+            </form>
+            <!-- Remind Passowrd -->
+            <div id="formFooter">
+                <a class="underlineHover" href="create-account.php">Don't have an account? Create one here!</a>
+            </div>
+        </div>
     </div>
-
-    <h5>Don't have an account yet? Create one <a href="create-account.php">here!</a></h5>
 </body>
 </html>
