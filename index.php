@@ -89,11 +89,11 @@
                     <!--Account drop-down list-->
                     <div class="btn-group">
                         <?php if ($user['AccountType'] == 'A'): ?>
-                            <button type="button" class="btn btn-danger">Welcome, <?=$user['Username']?> [A]</button>
+                            <button type="button" class="btn btn-warning">Welcome, <?=$user['Username']?> [A]</button>
                         <?php else: ?>
-                            <button type="button" class="btn btn-danger">Welcome, <?=$user['Username']?></button>
+                            <button type="button" class="btn btn-warning">Welcome, <?=$user['Username']?></button>
                         <?php endif ?>
-                        <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu">
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                 <?php else: ?>
-                    <a class="btn btn-danger" href="login.php" role="button">Sign in</a>
+                    <a class="btn btn-warning" href="login.php" role="button">Sign in</a>
                 <?php endif ?>
             </div>
             <?php if ($userLoggedIn && $user['ProfilePicture'] != null): ?>
@@ -128,7 +128,7 @@
         </select>
 
         <label for="view">View:</label>
-        <select id=" view" name="view">
+        <select id="view" name="view">
             <?php foreach ($viewOptions as $viewOption): ?>
                 <?php if ($viewOption == $view): ?>
                     <option selected><?=$viewOption?></option>
@@ -143,7 +143,11 @@
     <div id="wrapper">
         <?php foreach ($cards as $card): ?>
             <div class="card">
-                <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
+                <?php if ($card['CardImage']): ?>
+                    <img src="img/<?=$card['CardImage']?>" alt="<?=$card['Name']?>" />
+                <?php else: ?>
+                    <p>No Image</p>
+                <?php endif ?>
 
                 <?php if ($expandedDetails): ?>
                     <h1><?=$card['Name']?></h1> 
@@ -176,11 +180,7 @@
                         <?php endif ?>
                     </div>
 
-                    <div id="card-levels">
-                        <p><?=$cardLevels['Level']?></p>
-                    </div>
-
-                    <h4 style="font-family: font-family: 'Germania One', cursive;">Unlocks at arena <?=$card['ArenaLevel']?></h4> 
+                    <h4 style="font-family: 'Germania One', cursive;">Unlocks at arena <?=$card['ArenaLevel']?></h4> 
                 <?php endif ?>
                 
                 <!-- If user is logged in as system administrator, then provide an edit link for system cards. -->

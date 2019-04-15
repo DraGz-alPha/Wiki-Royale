@@ -144,7 +144,7 @@
                             $new_image_path       = file_upload_path($profilePictureFileName);
 
                             $resizeObj = new resize('img/Profile_Pics/' . $profilePictureFileName);
-                            $resizeObj -> resizeImage(250, 250, 0);
+                            $resizeObj -> resizeImage(125, 125, 0);
                             $resizeObj -> saveImage('img/Profile_Pics/' . $profilePictureFileName, 100);
 
                             move_uploaded_file($temporary_image_path, $new_image_path);
@@ -252,7 +252,7 @@
             $statement->execute();
             $insert_id = $db->lastInsertId();
 
-            if ($admin_create) {
+            if (!$admin_create) {
                 header("Location: admin.php");
             }
             else {

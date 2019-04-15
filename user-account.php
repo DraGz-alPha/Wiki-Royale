@@ -18,28 +18,30 @@
     // If a username GET parameter is set, sanitize it and dassign the value to the username variable.
     if (isset($_GET['username'])) {
         $username = filter_input(INPUT_GET, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    }
 
-    // Query the database with the username specified from the GET parameter.
-    $query = "SELECT UserID FROM users WHERE Username = '$username'";
-    $statement = $db->prepare($query);
-    $statement->execute();
-    $user = $statement->fetch();
-
-    $userFound = true;
-
-    // If a user is found in the database, query the cards table to retrieve the user's card collection.
-    if ($user == null) {
-        $userFound = false;
-    }
-    else {
-        $userID = $user['UserID'];
-        $queryCards = "SELECT * FROM cards WHERE UserID = '$userID'";
-        $statement = $db->prepare($queryCards);
+        // Query the database with the username specified from the GET parameter.
+        $query = "SELECT UserID FROM users WHERE Username = '$username'";
+        $statement = $db->prepare($query);
         $statement->execute();
+        $user = $statement->fetch();
 
-        $cards = $statement->fetchAll();
-    }  
+        $userFound = true;
+
+        // If a user is found in the database, query the cards table to retrieve the user's card collection.
+        if ($user == null) {
+            $userFound = false;
+        }
+        else {
+            $userID = $user['UserID'];
+            $queryCards = "SELECT * FROM cards WHERE UserID = '$userID'";
+            $statement = $db->prepare($queryCards);
+            $statement->execute();
+
+            $cards = $statement->fetchAll();
+        }  
+    }
+
+    
 ?>
 
 <!DOCTYPE html>
@@ -54,10 +56,56 @@
         <title>User not found</title>
     <?php endif ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="user-account.css">
-    <script src="main.js"></script>
+    <link rel='stylesheet' type='text/css' href='bootstrap/css/bootstrap.min.css'>
 </head>
 <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="index.php">Wiki Royale</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.php">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="members.php">Members</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="add-card.php">Create Card</a>
+                    </li>
+                </ul>
+                <?php if ($userLoggedIn): ?> 
+                    <!--Account drop-down list-->
+                    <div class="btn-group">
+                        <?php if ($loggedInUser['AccountType'] == 'A'): ?>
+                            <button type="button" class="btn btn-warning">Welcome, <?=$loggedInUser['Username']?> [A]</button>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-warning">Welcome, <?=$loggedInUser['Username']?></button>
+                        <?php endif ?>
+                        <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="my-account.php">My Account</a>
+                            <?php if ($loggedInUser['AccountType'] == 'A'): ?>
+                                <a class="dropdown-item" href="admin.php">Admin Tools</a>
+                            <?php endif ?>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="logout.php">Sign out</a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a class="btn btn-warning" href="login.php" role="button">Sign in</a>
+                <?php endif ?>
+            </div>
+            <?php if ($userLoggedIn && $loggedInUser['ProfilePicture'] != null): ?>
+                <img src="img/Profile_Pics/<?=$loggedInUser['ProfilePicture']?>" alt="<?=$user['ProfilePicture']?>" />
+            <?php endif ?>
+        </nav>
+    </header>
     <!--If the searched user is found in the database, return the associated information, otherwise display that the user doesn't exist in the database-->
     <?php if ($userFound): ?>
         <h1><?=$username?>'s account</h1>
@@ -68,7 +116,7 @@
             <?php if ($cards != null): ?>
                 <?php foreach ($cards as $card): ?>
                     <div style="border: 1px black solid; background-color: grey; width: 300px;">
-                        <img src="img/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
+                        <img src="img/user_cards/<?=$card['Name']?>.png" alt="<?=$card['Name']?>" width="100" />
 
                         <h1><?=$card['Name']?></h1> 
                         <h3><?=$card['Rarity']?></h3>
@@ -120,5 +168,9 @@
     <?php else: ?>
         <p>The specified user doesn't exist</p>
     <?php endif ?>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

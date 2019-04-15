@@ -60,7 +60,7 @@
                 </p>
                 <p>
                     <label for="rarity">Rarity:</label>
-                    <select id="rarity" name="rarity" value="<?=$card['Rarity']?>" >
+                    <select id="rarity" name="rarity" >
                         <?php foreach ($rarities as $rarity): ?>
                             <?php if ($rarity == $card['Rarity']): ?>
                                 <option selected><?=$rarity?></option>
@@ -141,6 +141,9 @@
                 <p>
                     <label for="description">Description:</label>
                     <textarea id="description" name="description" form="cardDetails"><?=$card['Description']?></textarea>
+                </p>
+                <p>
+                    <input type="file" name="card-image" id="card-image">
                 </p>
                 <p>
                     <input type="hidden" name="cardID" value=<?=$cardID?> />
