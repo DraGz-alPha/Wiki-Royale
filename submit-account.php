@@ -252,14 +252,12 @@
             $statement->execute();
             $insert_id = $db->lastInsertId();
 
-            if (!$admin_create) {
+            if ($admin_create) {
                 header("Location: admin.php");
             }
             else {
                 header("Location: login.php");
             }
-
-            echo $profilePictureFileName;
         } 
     }
 ?>

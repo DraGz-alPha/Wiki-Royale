@@ -39,9 +39,7 @@
 
             $cards = $statement->fetchAll();
         }  
-    }
-
-    
+    }  
 ?>
 
 <!DOCTYPE html>

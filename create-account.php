@@ -1,4 +1,24 @@
 <?php
+    require 'connect.php';
+    
+    session_start();
+    $userLoggedIn = false;
+    $adminLoggedIn = false;
+
+    if (isset($_SESSION['user'])) {
+        $user_session = $_SESSION['user'];
+
+        $user_query = "SELECT * FROM users WHERE UserID = $user_session";
+        $statement_user = $db->prepare($user_query);
+        $statement_user->execute();
+
+        $user = $statement_user->fetch();
+
+        if ($user['AccountType' == 'A']) {
+            $adminLoggedIn = true;
+        }
+        $userLoggedIn = true;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -24,6 +44,9 @@
                 <label for="profile-image">Profile picture:</label>
                 <input type="file" name="profile-image" id="profile-image">
                 <input type="submit" name="create" value="Create Account" />
+                <?php if ($adminLoggedIn): ?>
+                    <input type="hidden" name="admin-create" id="admin-create"/>
+                <?php endif ?>
             </form>
         </div>
     </div>
