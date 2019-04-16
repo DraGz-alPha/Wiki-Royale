@@ -17,10 +17,11 @@
     }
 
     $userExists = false;
+    $numberOfSearchResults = 0;
     
     if (isset($_POST['user-search'])) {
         $searchText = filter_input(INPUT_POST,'user-search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $returnedUsersQuery = "SELECT UserID, Username FROM users WHERE Username LIKE '%$searchText%' AND UserID != '$user_sessionID'";
+        $returnedUsersQuery = "SELECT UserID, Username, ProfilePicture FROM users WHERE Username LIKE '%$searchText%' AND Username <> 'system' AND UserID <> '$user_sessionID'";
         $statement_returnedUsers = $db->prepare($returnedUsersQuery);
         $statement_returnedUsers->execute();
         
@@ -40,7 +41,7 @@
     <title>Members</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='stylesheet' type='text/css' href='bootstrap/css/bootstrap.min.css'>
-    <script src="main.js"></script>
+    <link rel='stylesheet' type='text/css' href='members.css'>
 </head>
 <body>
     <header>
@@ -90,36 +91,41 @@
             <?php endif ?>
         </nav>
     </header>
-    <?php if ($userLoggedIn): ?>
-        <form action="members.php" method="post">
-            <label for="user-search">User Account:</label>
-            <input id="user-search" name="user-search" type="text">
-            <input type="submit" value="Search">
-        </form>
+    
+    <div id="wrapper">
+        <?php if ($userLoggedIn): ?>
+            <form action="members.php" method="post" style="margin-bottom: 30px;">
+                <input id="user-search" name="user-search" type="text" placeholder="username">
+                <input type="submit" value="Search">
+            </form>
 
-        <div id="user=profiles">
-            <?php if ($userExists): ?>
-                <table>
-                    <tr>
-                        <td>Username<td>
-                    </tr>
-                    <?php foreach ($returnedUsers as $returnedUser): ?>
-                        <tr>
-                            <td><a href="user-account.php?username=<?=$returnedUser['Username']?>"><?=$returnedUser['Username']?></a></td>
-                        </tr>
-                    <?php endforeach ?>
-                </table>
-            <?php else: ?>
-                <p>Sorry, no users match your search.</p>
+            <?php if (isset($_POST['user-search'])): ?>
+                <?php if ($searchText != ""): ?>
+                    <?php if ($userExists): ?>
+                        <?php foreach ($returnedUsers as $returnedUser): ?>
+                            <?php $numberOfSearchResults++ ?>
+                            <?php if (isset($returnedUser['ProfilePicture'])): ?>
+                                <p><a href="user-account.php?username=<?=$returnedUser['Username']?>"><?=$returnedUser['Username']?></a><img src="img/Profile_Pics/<?=$returnedUser['ProfilePicture']?>" alt="" width="100" style="padding-left: 20px;"></p>
+                            <?php else:?>
+                                <p><a href="user-account.php?username=<?=$returnedUser['Username']?>"><?=$returnedUser['Username']?></a></p>
+                            <?php endif ?>
+                        <?php endforeach ?>
+                        <p style="margin-top: 30px;">Search returned <?=$numberOfSearchResults?> users...</p>
+                    <?php else: ?>
+                        <p>Sorry, no users match your search.</p>
+                    <?php endif ?>
+                <?php else: ?>
+                    <p>Search cannot be empty!</p>
+                <?php endif ?>
             <?php endif ?>
-        </div>
-    <?php else: ?>
-        <p>Sorry, this page is for members only!</p>
-        <img src="img/page_error/crying.gif" alt="">
-        <audio autoplay>
-            <source src="crying.mp3" type="audio/mpeg">
-        </audio> 
-    <?php endif ?>
+        <?php else: ?>
+            <p>Sorry, this page is for members only!</p>
+            <img src="img/page_error/crying.gif" alt="">
+            <audio autoplay>
+                <source src="crying.mp3" type="audio/mpeg">
+            </audio> 
+        <?php endif ?>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

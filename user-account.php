@@ -20,7 +20,7 @@
         $username = filter_input(INPUT_GET, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         // Query the database with the username specified from the GET parameter.
-        $query = "SELECT UserID FROM users WHERE Username = '$username'";
+        $query = "SELECT Username, UserID, ProfilePicture FROM users WHERE Username = '$username' AND Username <> 'system'";
         $statement = $db->prepare($query);
         $statement->execute();
         $user = $statement->fetch();
@@ -106,7 +106,11 @@
     </header>
     <!--If the searched user is found in the database, return the associated information, otherwise display that the user doesn't exist in the database-->
     <?php if ($userFound): ?>
-        <h1><?=$username?>'s account</h1>
+        <?php if ($user['ProfilePicture']): ?>
+            <h1><?=$username?><img src="img/Profile_Pics/<?=$user['ProfilePicture']?>" alt="<?=$user['Username']?>"/></h1>
+        <?php else: ?>
+            <h1><?=$username?></h1>
+        <?php endif ?>
         <div id="user-cards">
             <h4><?=$username?>'s card collection:</h4>
 
